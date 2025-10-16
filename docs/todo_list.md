@@ -1,8 +1,8 @@
 # To-Do List: Sistema de Urna Eletrônica Simplificada
 
 ## Planejamento
-- [ ] Definir os integrantes do grupo (máximo 3 pessoas).
-- [ ] Escolher a interface do usuário (modo texto ou gráfica).
+- [x] Definir os integrantes do grupo (máximo 3 pessoas).
+- [x] Escolher a interface do usuário: gráfica.
 - [x] Selecionar a linguagem de programação orientada a objetos (Django com SQLite3 já definido).
 
 ## Desenvolvimento
