@@ -7,9 +7,9 @@
 
 ## Desenvolvimento
 ### Estrutura do Sistema
-- [ ] Criar classes principais:
-    - [ ] Classe `Candidato` (atributos: nome, número, cargo).
-    - [ ] Classe `Votacao` (atributos: cargos, candidatos, votos).
+- [x] Criar classes principais:
+    - [x] Classe `Candidato` (atributos: nome, número, cargo).
+    - [x] Classe `Votos` (atributos: cargos, candidatos, votos).
     - [ ] Classe `Eleitor` (métodos para votar).
 - [ ] Implementar conceitos de POO:
     - [ ] Encapsulamento.
