@@ -73,9 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (fieldName === "username" && value.length < 3) {
       isValid = false
       errorMessage = "Username must be at least 3 characters"
-    } else if (fieldName === "password" && value.length < 6) {
+    } else if (fieldName === "password" && value.length < 3) {
       isValid = false
-      errorMessage = "Password must be at least 6 characters"
+      errorMessage = "A senha deve ter pelo menos 3 caracteres"
     }
   
     if (!isValid) {
