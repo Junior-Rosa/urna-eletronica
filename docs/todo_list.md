@@ -11,10 +11,10 @@
     - [x] Classe `Candidato` (atributos: nome, número, cargo).
     - [x] Classe `Votos` (atributos: cargos, candidatos, votos).
     - [ ] Classe `Eleitor` (métodos para votar).
-- [ ] Implementar conceitos de POO:
-    - [ ] Encapsulamento.
-    - [ ] Herança.
-    - [ ] Polimorfismo.
+- [x] Implementar conceitos de POO:
+    - [x] Encapsulamento.
+    - [x] Herança.
+    - [x] Polimorfismo.
 
 ### Funcionalidades
 - [ ] Cadastro de Candidatos:

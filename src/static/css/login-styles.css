@@ -1,0 +1,478 @@
+/* ============================================
+   LOGIN PAGE STYLES
+   ============================================ */
+
+   :root {
+    /* Colors */
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-light: #3b82f6;
+    --secondary: #1e293b;
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+  
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+  
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+  
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 250ms ease-in-out;
+    --transition-slow: 350ms ease-in-out;
+  
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+  }
+  
+  /* ============================================
+     RESET & BASE STYLES
+     ============================================ */
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background);
+    min-height: 100vh;
+  }
+  
+  /* ============================================
+     LOGIN WRAPPER & CONTAINER
+     ============================================ */
+  
+  .login-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--spacing-md);
+    overflow: hidden;
+  }
+  
+  .background-decoration {
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  
+  .login-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+  }
+  
+  .login-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-2xl);
+    animation: slideUp 0.5s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ============================================
+     LOGIN HEADER
+     ============================================ */
+  
+  .login-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .login-header h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .login-header p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+  
+  /* ============================================
+     FORM STYLES
+     ============================================ */
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .form-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .input-icon {
+    position: absolute;
+    left: var(--spacing-md);
+    width: 16px;
+    height: 16px;
+    color: var(--text-light);
+    pointer-events: none;
+    stroke-width: 2;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 2.75rem;
+    font-size: var(--font-size-base);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    transition: all var(--transition-base);
+    font-family: inherit;
+  }
+  
+  .form-input::placeholder {
+    color: var(--text-light);
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: var(--surface);
+  }
+  
+  .form-input:hover:not(:focus) {
+    border-color: var(--primary-light);
+  }
+  
+  .form-error {
+    font-size: var(--font-size-sm);
+    color: var(--error);
+    display: block;
+    margin-top: var(--spacing-xs);
+  }
+  
+  /* ============================================
+     PASSWORD TOGGLE
+     ============================================ */
+  
+  .password-toggle {
+    position: absolute;
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    transition: color var(--transition-fast);
+  }
+  
+  .password-toggle:hover {
+    color: var(--primary);
+  }
+  
+  .eye-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+  }
+  
+  /* ============================================
+     FORM FOOTER (REMEMBER & FORGOT)
+     ============================================ */
+  
+  .form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+  
+  .checkbox-label:hover {
+    color: var(--text-primary);
+  }
+  
+  .checkbox-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+  }
+  
+  .forgot-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+  }
+  
+  .forgot-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+  
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  
+  .btn {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    font-family: inherit;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  
+  .btn-primary:disabled {
+    background-color: var(--text-light);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .btn-block {
+    width: 100%;
+  }
+  
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+  }
+  
+  .btn-text {
+    display: inline;
+  }
+  
+  /* ============================================
+     ALERTS
+     ============================================ */
+  
+  .alert {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .alert-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+  
+  .alert-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    stroke-width: 2;
+  }
+  
+  /* ============================================
+     LOGIN FOOTER
+     ============================================ */
+  
+  .login-footer {
+    text-align: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+  
+  .signup-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition-fast);
+  }
+  
+  .signup-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+  
+  /* ============================================
+     RESPONSIVE DESIGN
+     ============================================ */
+  
+  @media (max-width: 640px) {
+    .login-card {
+      padding: var(--spacing-xl);
+    }
+  
+    .login-header h1 {
+      font-size: var(--font-size-xl);
+    }
+  
+    .form-footer {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+  
+    .background-decoration {
+      width: 300px;
+      height: 300px;
+      top: -30%;
+      right: -20%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .login-wrapper {
+      padding: var(--spacing-sm);
+    }
+  
+    .login-card {
+      padding: var(--spacing-lg);
+    }
+  
+    .login-header h1 {
+      font-size: var(--font-size-lg);
+    }
+  
+    .login-header p {
+      font-size: var(--font-size-sm);
+    }
+  }
+  
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-light: #94a3b8;
+    }
+  
+    .form-input {
+      background-color: #0f172a;
+    }
+  
+    .form-input:focus {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+  }
+  
