@@ -1,8 +1,62 @@
 {% extends "_partials/base.html" %}
-
+{% load static%}
 {% block title %} - Home{% endblock %}
-
+{% block extra_head%}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
 {% block content %}
-    <h2>Welcome to the URNA Application</h2>
-    <p>This is the home page.</p>
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">📊 Lista de Eleições</h2>
+
+  <div class="row g-4">
+    {% for eleicao in eleicoes %}
+      <div class="col-md-4">
+        <div class="card shadow-sm rounded-4 h-100">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ eleicao.nome }}</h5>
+            <p class="text-muted mb-1"><strong>Tipo:</strong> {{ eleicao.get_tipo_display }}</p>
+            <p class="text-muted mb-1"><strong>Status:</strong> {{ eleicao.get_status_display }}</p>
+            <p class="text-muted mb-2">
+              <strong>Criação:</strong> {{ eleicao.data_criacao|date:"d/m/Y H:i" }}<br>
+              {% if eleicao.data_finalizacao %}
+                <strong>Finalização:</strong> {{ eleicao.data_finalizacao|date:"d/m/Y H:i" }}
+              {% else %}
+                <strong>Finalização:</strong> <span class="text-warning">Sem data definida</span>
+              {% endif %}
+            </p>
+
+            <!-- Barra de progresso -->
+            <div class="progress" style="height: 10px;">
+              {% if eleicao.status == 'FINALIZADA' %}
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              {% else %}
+                <div class="progress-bar 
+                            {% if eleicao.status == 'EM_ANDAMENTO' %}bg-primary{% else %}bg-secondary{% endif %}" 
+                     role="progressbar"
+                     style="width: {{ eleicao.progresso|floatformat:0 }}%;"
+                     aria-valuenow="{{ eleicao.progresso|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+                </div>
+              {% endif %}
+            </div>
+
+            <small class="text-muted d-block mt-1">
+              Progresso: {{ eleicao.progresso|floatformat:0 }}%
+            </small>
+
+            {% if eleicao.status == 'FINALIZADA'%}
+                <div class="d-grid mt-3">
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        📄 Gerar Relatório de Votos
+                    </a>
+                </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted">Nenhuma eleição cadastrada.</p>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

@@ -3,6 +3,8 @@
 from django.db import models
 from .eleitor import Eleitor
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+
 
 class Eleicao(models.Model):
     """Representa uma eleição."""
@@ -21,15 +23,24 @@ class Eleicao(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_ELEICAO_CHOICES, verbose_name="Tipo de Eleição")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='NAO_INICIADA', verbose_name="Status")
     data_criacao = models.DateTimeField(auto_now_add=True)
+    data_finalizacao = models.DateTimeField(null=True, blank=True)
+    
 
     def __str__(self):
         return self.nome
     
+    def verificar_status(self):
+        """Atualiza o status automaticamente se a data final já passou."""
+        if self.data_finalizacao and self.data_finalizacao <= timezone.now() and self.status != 'FINALIZADA':
+            self.status = 'FINALIZADA'
+            super().save(update_fields=['status'])
+            
     
     def save(self, *args, **kwargs):
         novo = self.pk is None
         super().save(*args, **kwargs)
-
+        self.verificar_status()
+        
         if novo:
             if self.tipo == 'PRESIDENCIAL':
                 cargos = [
