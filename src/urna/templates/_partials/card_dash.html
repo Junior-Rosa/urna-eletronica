@@ -31,14 +31,24 @@
               {% endif %}
             </div>
             {% if eleicao.status == 'FINALIZADA' %}
-            <small class="text-muted d-block mt-1">
-              Progresso: 100%
-            </small>
+                <small class="text-muted d-block mt-1">
+                    Progresso: 100%
+                </small>
             {% else %}
-            <small class="text-muted d-block mt-1">
-              Progresso: {{ eleicao.progresso|floatformat:0 }}%
-            </small>
+                <small class="text-muted d-block mt-1">
+                    Progresso: {{ eleicao.progresso|floatformat:0 }}%
+                </small>
             {% endif %}
+            
+            {% if eleicao.status == 'EM_ANDAMENTO' %}
+                {% if eleicao.id in votacoes_usuario %}
+                    <button class="btn btn-secondary mt-2" disabled>✅ Você já votou</button>
+                {% else %}
+                    <a href="#
+                    " class="btn btn-primary mt-2">🗳️ Votar</a>
+                {% endif %}
+            {% endif %}
+
             
 
             {% if eleicao.status == 'FINALIZADA'%}

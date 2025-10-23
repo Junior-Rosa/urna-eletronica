@@ -7,10 +7,11 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     # Admin URLs
     path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),
-    path('', views.IndexView.as_view(), name='index'),
     path('logout/', auth_views.LogoutView.as_view(http_method_names=['get', 'post']), name='logout'),
+    path('register/', views.register, name='registro'),
     
     
+    path('', views.IndexView.as_view(), name='index'),
     path('relatorio/<int:pk>/', views.EleicaoRelatorioCSV.as_view(), name='relatorio-csv'),
     
 ]

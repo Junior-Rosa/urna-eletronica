@@ -90,7 +90,7 @@ class Candidato(models.Model):
         unique_together = ('cargo', 'numero') # O número deve ser único por cargo
 
     def __str__(self):
-        return f"{self.eleitor.nome} ({self.numero}) - {self.cargo.nome}"
+        return f"{self.eleitor.user.username} ({self.numero}) - {self.cargo.nome}"
 
     def get_votos(self):
         """Retorna o número de votos recebidos pelo candidato."""

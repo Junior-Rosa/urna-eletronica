@@ -27,15 +27,15 @@ class CandidatoAdmin(admin.ModelAdmin):
 
 @admin.register(Eleitor)
 class EleitorAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'identificador')
-    search_fields = ('nome', 'identificador')
+    list_display = ('user', 'identificador')
+    search_fields = ('user', 'identificador')
     
 @admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
     form = VotoForm
     list_display = ('eleitor', 'candidato', 'data_voto')
     list_filter = ('candidato__cargo__eleicao', 'candidato__cargo')
-    search_fields = ('eleitor__nome', 'candidato__nome')
+    search_fields = ('eleitor__user', 'candidato__user')
     readonly_fields = ('data_voto',)
     ordering = ('-data_voto',)
 

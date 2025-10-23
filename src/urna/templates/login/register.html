@@ -1,27 +1,175 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>URNA | Registro</title>
+    <link rel="stylesheet" href="{% static 'css/login-styles.css' %}">
 </head>
 <body>
-    <h1>Register</h1>
-    <form method="POST" action="{% url 'register' %}">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br>
-        <label for="password1">Password:</label>
-        <input type="password" id="password1" name="password1" required>
-        <br>
-        <label for="password2">Confirm Password:</label>
-        <input type="password" id="password2" name="password2" required>
-        <br>
-        <button type="submit">Register</button>
-    </form>
+    <div class="login-wrapper">
+        <!-- Background decoration -->
+        <div class="background-decoration"></div>
+        
+        <main class="login-container">
+            <div class="login-card">
+                <!-- Header -->
+                <div class="login-header">
+                    <h1>Crie sua Conta</h1>
+                    <p>Preencha os campos abaixo para se registrar</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form method="post" action="{% url 'registro' %}" class="login-form" id="registerForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Mensagens de erro gerais -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-error" role="alert">
+                            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <div>
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Nome de usuário -->
+                    <div class="form-group">
+                        <label for="username" class="form-label">Usuário</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg> 
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                class="form-input"
+                                placeholder="Escolha um nome de usuário"
+                                value="{{ form.username.value|default:'' }}"
+                                required
+                            >
+                        </div>
+                        {% if form.username.errors %}
+                            <span class="form-error">{{ form.username.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <!-- Identificador -->
+                    <div class="form-group">
+                        <label for="identificador" class="form-label">Identificador (CPF ou Título de Eleitor)</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input 
+                                type="text" 
+                                id="identificador" 
+                                name="identificador" 
+                                class="form-input"
+                                placeholder="Informe CPF ou Título de Eleitor"
+                                value="{{ form.identificador.value|default:'' }}"
+                                required
+                            >
+                        </div>
+                        {% if form.identificador.errors %}
+                            <span class="form-error">{{ form.identificador.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">E-mail</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 4h16v16H4z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="form-input"
+                                placeholder="Digite seu e-mail"
+                                value="{{ form.email.value|default:'' }}"
+                                required
+                            >
+                        </div>
+                        {% if form.email.errors %}
+                            <span class="form-error">{{ form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Senha -->
+                    <div class="form-group">
+                        <label for="password1" class="form-label">Senha</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input 
+                                type="password" 
+                                id="password1" 
+                                name="password1" 
+                                class="form-input"
+                                placeholder="Crie uma senha segura"
+                                required
+                            >
+                        </div>
+                        {% if form.password1.errors %}
+                            <span class="form-error">{{ form.password1.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirmação da senha -->
+                    <div class="form-group">
+                        <label for="password2" class="form-label">Confirme a Senha</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input 
+                                type="password" 
+                                id="password2" 
+                                name="password2" 
+                                class="form-input"
+                                placeholder="Repita a senha"
+                                required
+                            >
+                        </div>
+                        {% if form.password2.errors %}
+                            <span class="form-error">{{ form.password2.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botão de envio -->
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span class="btn-text">Registrar</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Link para login -->
+                <div class="login-footer">
+                    <p>Já possui uma conta? <a href="{% url 'login' %}" class="signup-link">Acesse aqui</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'js/login-script.js' %}"></script>
 </body>
 </html>

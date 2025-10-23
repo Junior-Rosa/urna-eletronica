@@ -3,7 +3,7 @@ from django.views.generic import ListView
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from ..models import Eleicao
+from ..models import Eleicao, Voto
 import csv
 from django.http import HttpResponse
 
@@ -17,12 +17,13 @@ class IndexView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        agora = timezone.now()
+        user = self.request.user
         
-        
-
         context['eleicoes_andamento'] = context['eleicoes'].filter(status='EM_ANDAMENTO')
         context['eleicoes_finalizadas'] = context['eleicoes'].filter(status='FINALIZADA')
+        context['votacoes_usuario'] = set(
+            Voto.objects.filter(eleitor=user.eleitor).values_list('eleicao_id', flat=True)
+        )
         return context
     
 
