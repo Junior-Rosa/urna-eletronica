@@ -10,4 +10,7 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('logout/', auth_views.LogoutView.as_view(http_method_names=['get', 'post']), name='logout'),
     
+    
+    path('relatorio/<int:pk>/', views.EleicaoRelatorioCSV.as_view(), name='relatorio-csv'),
+    
 ]

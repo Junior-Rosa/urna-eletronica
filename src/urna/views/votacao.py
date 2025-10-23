@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from ..models import Eleicao
+import csv
+from django.http import HttpResponse
+
 
 class IndexView(LoginRequiredMixin, ListView):
     
@@ -15,14 +18,27 @@ class IndexView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         agora = timezone.now()
+        
+        
 
-        for eleicao in context['eleicoes']:
-            if eleicao.data_finalizacao:
-                total_dias = (eleicao.data_finalizacao - eleicao.data_criacao).total_seconds()
-                dias_passados = (agora - eleicao.data_criacao).total_seconds()
-                progresso = (dias_passados / total_dias) * 100 if total_dias > 0 else 0
-                eleicao.progresso = max(0, min(progresso, 100)) 
-            else:
-                eleicao.progresso = 0
-
+        context['eleicoes_andamento'] = context['eleicoes'].filter(status='EM_ANDAMENTO')
+        context['eleicoes_finalizadas'] = context['eleicoes'].filter(status='FINALIZADA')
         return context
+    
+
+class EleicaoRelatorioCSV(LoginRequiredMixin, View):
+    """Gera um relatório CSV com os votos de uma eleição."""
+    def get(self, request, pk):
+        eleicao = Eleicao.objects.get(pk=pk)
+        votos = eleicao.votos.all()
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="relatorio_{eleicao.nome}.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(['Eleitor', 'Candidato', 'Data do Voto'])
+
+        for voto in votos:
+            writer.writerow([voto.eleitor, voto.candidato, voto.data_voto.strftime('%d/%m/%Y %H:%M')])
+
+        return response

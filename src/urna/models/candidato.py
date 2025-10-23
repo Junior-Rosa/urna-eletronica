@@ -36,6 +36,17 @@ class Eleicao(models.Model):
             super().save(update_fields=['status'])
             
     
+    def progresso(self):
+
+            agora = timezone.now()
+            if self.data_finalizacao:
+                total_dias = (self.data_finalizacao - self.data_criacao).total_seconds()
+                dias_passados = (agora - self.data_criacao).total_seconds()
+                progresso = (dias_passados / total_dias) * 100 if total_dias > 0 else 0
+                return max(0, min(progresso, 100)) 
+            else:
+                return 0
+    
     def save(self, *args, **kwargs):
         novo = self.pk is None
         super().save(*args, **kwargs)
@@ -69,7 +80,7 @@ class Cargo(models.Model):
 
 class Candidato(models.Model):
     """Representa um candidato concorrendo a um cargo."""
-    eleitor = models.OneToOneField(Eleitor, on_delete=models.CASCADE, related_name='candidato')
+    eleitor = models.ForeignKey(Eleitor, on_delete=models.CASCADE, related_name='candidato')
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='candidatos')
     numero = models.CharField(verbose_name="Número do Candidato")
     partido = models.CharField(max_length=100)
