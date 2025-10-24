@@ -1,0 +1,26 @@
+<div class="row g-4">
+    {% for candidato in candidatos %}
+      <div class="col-md-4 col-sm-6">
+        <div class="card shadow-sm rounded-4 h-100">
+          <!-- Foto do candidato -->
+          {% if candidato.foto %}
+          <img src="{{ candidato.foto.url }}" class="card-img-top rounded-top-4" alt="Foto de {{ candidato.eleitor.user.username }}" style="height: 200px; object-fit: cover;">
+          {% else %}
+          <div class="card-img-top bg-secondary rounded-top-4 d-flex align-items-center justify-content-center" style="height: 200px;">
+              <span class="text-white fw-bold">Sem foto</span>
+          </div>
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <!-- Nome e número -->
+            <h5 class="card-title fw-bold">{{ candidato.eleitor.user.get_full_name|default:candidato.eleitor.user.username }}</h5>
+            <p class="mb-1"><strong>Número:</strong> {{ candidato.numero }}</p>
+            <p class="mb-1"><strong>Partido:</strong> {{ candidato.partido }}</p>
+            <p class="mb-3"><strong>Total de Votos:</strong> {{ candidato.get_votos }}</p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted">Nenhum candidato ainda se cadastrou.</p>
+    {% endfor %}
+</div>

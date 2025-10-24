@@ -56,7 +56,7 @@
                     " class="btn btn-primary mt-2">🗳️ Quero me Candidatar</a>
                 {% endif %}
             {% endif %}
-
+            <a href="{% url 'candidatos' eleicao.pk %}" class="btn btn-primary mt-2">🗳️ Ver candidatos para esta eleição</a>
             
 
             {% if eleicao.status == 'FINALIZADA'%}

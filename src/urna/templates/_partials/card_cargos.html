@@ -5,8 +5,9 @@
           <div class="card-body">
             <h5 class="card-title fw-bold">{{ cargo.nome }}</h5>
             <p class="text-muted mb-1"><strong>Digitos:</strong> {{ cargo.digitos }}</p>
+            <p class="text-muted mb-1"><strong>Candidatos:</strong> {{ cargo.digitos }}</p>
             
-                <a href="{% url 'candidatar' kwargs.pk cargo.pk %}" class="btn btn-primary mt-2">🗳️ Candidatar para este cargo</a>
+                <a href="{% url 'candidatar' cargo.pk %}" class="btn btn-primary mt-2">🗳️ Candidatar para este cargo</a>
 
           </div>
         </div>
