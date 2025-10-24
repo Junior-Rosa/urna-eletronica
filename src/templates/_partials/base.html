@@ -14,7 +14,6 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    {% include '_partials/toast.html' %}
     <header>
         <div>
             <h1>URNA</h1>
@@ -24,7 +23,7 @@
             <nav>
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="#about">Area do Candidato</a></li>
+                    <li><a href="{% url 'area-candidato' %}">Area do Candidato</a></li>
                     <li><a href="#about">Area do Eleitor</a></li>
                     <li>
                         <form action="{% url 'logout' %}" method="post" style="display: inline;">
@@ -39,6 +38,7 @@
 
     <main>
         {% block content %}{% endblock %}
+        {% include "_partials/toast.html" %}
     </main>
 
     <footer>

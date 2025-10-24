@@ -12,6 +12,9 @@ urlpatterns = [
     
     
     path('', views.IndexView.as_view(), name='index'),
+    path('candidatura/<int:pk>/', views.CandidaturaView.as_view(), name='candidatura'),
+    path('candidatar/<int:pk_eleicao>/<int:pk_cargo>', views.CandidatarView.as_view(), name='candidatar'),
+    path('candidato/', views.AreaCandidatoView.as_view(), name='area-candidato'),
     path('relatorio/<int:pk>/', views.EleicaoRelatorioCSV.as_view(), name='relatorio-csv'),
     
 ]

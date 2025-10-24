@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from ..models import Eleicao, Voto
 import csv
 from django.http import HttpResponse
-
+from django.contrib import messages
 
 class IndexView(LoginRequiredMixin, ListView):
     
@@ -21,9 +21,11 @@ class IndexView(LoginRequiredMixin, ListView):
         
         context['eleicoes_andamento'] = context['eleicoes'].filter(status='EM_ANDAMENTO')
         context['eleicoes_finalizadas'] = context['eleicoes'].filter(status='FINALIZADA')
-        context['votacoes_usuario'] = set(
-            Voto.objects.filter(eleitor=user.eleitor).values_list('eleicao_id', flat=True)
-        )
+        if hasattr(user, 'eleitor'):
+            context['votacoes_usuario'] = set(
+                Voto.objects.filter(eleitor=user.eleitor).values_list('eleicao_id', flat=True)
+            )
+        
         return context
     
 

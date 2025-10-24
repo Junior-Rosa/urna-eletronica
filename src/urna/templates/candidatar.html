@@ -1,0 +1,12 @@
+{% extends "_partials/base.html" %}
+{% load static%}
+{% block title %} - Cargos{% endblock %}
+{% block extra_head%}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    {{form.as_p}}
+
+</div>
+{% endblock %}

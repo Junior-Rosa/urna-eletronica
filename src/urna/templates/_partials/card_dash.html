@@ -48,6 +48,14 @@
                     " class="btn btn-primary mt-2">🗳️ Votar</a>
                 {% endif %}
             {% endif %}
+            {% if eleicao.status == 'NAO_INICIADA' %}
+                {% if eleicao.id in candidaturas %}
+                    <button class="btn btn-secondary mt-2" disabled>✅ Você já se candidatou</button>
+                {% else %}
+                    <a href="{% url 'candidatura' eleicao.pk %}
+                    " class="btn btn-primary mt-2">🗳️ Quero me Candidatar</a>
+                {% endif %}
+            {% endif %}
 
             
 

@@ -1,12 +1,12 @@
 {% extends "_partials/base.html" %}
 {% load static%}
-{% block title %} - Area do eleitor{% endblock %}
+{% block title %} - Area do Candidato{% endblock %}
 {% block extra_head%}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4 mt-4  text-center">📊 Lista de Eleições disponiveis para votação</h2>
+    <h2 class="mb-4 mt-4  text-center">📊 Lista de Eleições disponiveis para candidatura</h2>
         {% include '_partials/card_dash.html' with eleicoes=eleicoes %}
 
 </div>
