@@ -1,9 +1,9 @@
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from ..models import Eleicao, Voto
+from ..models import Eleicao, Voto, Cargo
 import csv
 from django.http import HttpResponse
 from django.contrib import messages
@@ -45,3 +45,16 @@ class EleicaoRelatorioCSV(LoginRequiredMixin, View):
             writer.writerow([voto.eleitor, voto.candidato, voto.data_voto.strftime('%d/%m/%Y %H:%M')])
 
         return response
+
+class CargosView(LoginRequiredMixin, TemplateView):
+    model = Cargo
+    template_name = 'cargos.html'
+
+    def get_context_data(self, pk,**kwargs):
+        context = super().get_context_data(**kwargs)
+        cargos = Cargo.objects.filter(eleicao__pk=pk)
+        eleicao = Eleicao.objects.get(pk=pk)
+        context['cargo'] = cargos
+        context['eleicao'] = eleicao
+
+        return context

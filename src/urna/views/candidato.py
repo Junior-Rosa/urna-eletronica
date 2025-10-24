@@ -27,6 +27,7 @@ class CandidaturaView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         cargos = Cargo.objects.filter(eleicao__pk=pk)
         context['cargos'] = cargos
+        context['eleicao'] = Eleicao.objects.get(pk=pk)
         return context
     
     def get(self, request, *args, **kwargs):

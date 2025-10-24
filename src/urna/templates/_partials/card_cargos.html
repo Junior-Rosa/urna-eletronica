@@ -6,8 +6,11 @@
             <h5 class="card-title fw-bold">{{ cargo.nome }}</h5>
             <p class="text-muted mb-1"><strong>Digitos:</strong> {{ cargo.digitos }}</p>
             <p class="text-muted mb-1"><strong>Candidatos:</strong> {{ cargo.digitos }}</p>
-            
-                <a href="{% url 'candidatar' cargo.pk %}" class="btn btn-primary mt-2">🗳️ Candidatar para este cargo</a>
+                {% if eleicao.status == 'NAO_INICIADA' %}
+                    <a href="{% url 'candidatar' cargo.pk %}" class="btn btn-primary mt-2">🗳️ Candidatar para este cargo</a>
+                {% elif eleicao.status == 'EM_ANDAMENTO' %}
+                    <a href="#" class="btn btn-primary mt-2">🗳️ Votar neste cargo</a>
+                {% endif %}
 
           </div>
         </div>
