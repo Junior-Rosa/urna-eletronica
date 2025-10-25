@@ -1,3 +1,9 @@
 .card{
     background-color: rgba(199, 185, 185, 0.247);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
+  
+  .card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }

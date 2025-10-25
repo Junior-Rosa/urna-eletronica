@@ -9,6 +9,8 @@ class EleicaoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'tipo', 'status', 'data_criacao')
     list_filter = ('tipo', 'status')
     search_fields = ('nome',)
+    list_editable = ('status',)
+    
     
 @admin.register(Cargo)
 class CargoAdmin(admin.ModelAdmin):

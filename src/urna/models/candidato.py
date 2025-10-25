@@ -77,6 +77,10 @@ class Cargo(models.Model):
 
     def __str__(self):
         return f"{self.nome} ({self.eleicao.nome})"
+    
+    def get_total_candidatos(self):
+        """Retorna os candidatos concorrendo a este cargo."""
+        return self.candidatos.count()
 
 class Candidato(models.Model):
     """Representa um candidato concorrendo a um cargo."""
@@ -95,6 +99,7 @@ class Candidato(models.Model):
     def get_votos(self):
         """Retorna o número de votos recebidos pelo candidato."""
         return self.votos.count()
+    
     
     get_votos.short_description = "Total de Votos"
     

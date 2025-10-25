@@ -28,6 +28,12 @@ class IndexView(LoginRequiredMixin, ListView):
         
         return context
     
+    def get_queryset(self):
+        
+        qs = super().get_queryset()
+        for eleicao in qs:
+            eleicao.verificar_status()
+        return qs
 
 class EleicaoRelatorioCSV(LoginRequiredMixin, View):
     """Gera um relatório CSV com os votos de uma eleição."""
