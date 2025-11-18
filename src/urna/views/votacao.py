@@ -1,12 +1,12 @@
+from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import ListView, TemplateView
-from django.utils import timezone
-from django.shortcuts import render
+from django.views.generic import ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from ..forms import VotoForm
 from ..models import Eleicao, Voto, Cargo
 import csv
 from django.http import HttpResponse
-from django.contrib import messages
 
 class IndexView(LoginRequiredMixin, ListView):
     
@@ -25,7 +25,7 @@ class IndexView(LoginRequiredMixin, ListView):
             context['votacoes_usuario'] = set(
                 Voto.objects.filter(eleitor=user.eleitor).values_list('eleicao_id', flat=True)
             )
-        
+
         return context
     
 
@@ -46,15 +46,18 @@ class EleicaoRelatorioCSV(LoginRequiredMixin, View):
 
         return response
 
-class CargosView(LoginRequiredMixin, TemplateView):
-    model = Cargo
+class CargosView(LoginRequiredMixin, CreateView):
+    model = Voto
     template_name = 'cargos.html'
+    form_class = VotoForm
+    success_url = reverse_lazy('success-page')
 
-    def get_context_data(self, pk,**kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cargos = Cargo.objects.filter(eleicao__pk=pk)
-        eleicao = Eleicao.objects.get(pk=pk)
-        context['cargo'] = cargos
-        context['eleicao'] = eleicao
-
+        pk = self.kwargs['pk']
+        context['cargos'] = Cargo.objects.filter(eleicao__pk=pk)
+        context['eleicao'] = Eleicao.objects.get(pk=pk)
         return context
+
+    def get_success_url(self):
+        return reverse('index')
