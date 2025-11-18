@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from urna.models import Eleicao, Candidato, Cargo, Eleitor
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse_lazy
 from urna.forms import CandidatarForm
 
 class AreaCandidatoView(LoginRequiredMixin, TemplateView):
@@ -46,7 +46,7 @@ class CandidatarCreateView(LoginRequiredMixin, CreateView):
     model = Candidato
     form_class = CandidatarForm
     template_name = 'candidatar.html'
-
+    success_url = reverse_lazy('area-candidato')
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -57,8 +57,8 @@ class CandidatarCreateView(LoginRequiredMixin, CreateView):
         if Candidato.objects.filter(eleitor=request.user.eleitor, cargo=self.cargo).exists():
             messages.warning(request, "Você já é candidato para este cargo.")
             return self.handle_no_permission()
+        
         return super().dispatch(request, *args, **kwargs)
-    
     
     def get_form(self, form_class:CandidatarForm=None):
         form = super().get_form(form_class)
@@ -78,11 +78,11 @@ class CandidatarCreateView(LoginRequiredMixin, CreateView):
         # print(form.instance)
         return super().form_valid(form)
     
-    def get_success_url(self):
-        """
-        Redireciona de volta para a página da eleição.
-        """
-        return reverse('area-candidato')
+    # def get_success_url(self):
+    #     """
+    #     Redireciona de volta para a página da eleição.
+    #     """
+    #     return reverse('area-candidato')
     
     def get_context_data(self, **kwargs):
         """
@@ -99,5 +99,10 @@ class CandidatosListView(LoginRequiredMixin, ListView):
     context_object_name = 'candidatos'
     
     def get_queryset(self):
-        eleicao = get_object_or_404(Eleicao, pk=self.kwargs.get('pk'))
-        return Candidato.objects.filter(cargo__eleicao=eleicao)
+        self.eleicao = get_object_or_404(Eleicao, pk=self.kwargs.get('pk'))
+        return Candidato.objects.filter(cargo__eleicao=self.eleicao)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['eleicao'] = self.eleicao
+        return context

@@ -19,8 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
+
+admin.site.site_header = "Painel Administrativo - Sistema de Eleições"
+admin.site.site_title = "Administração | Sistema de Eleições"
+admin.site.index_title = "Bem-vindo ao Painel de Controle"
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('_admin/', admin.site.urls),
     # path("", include("django.contrib.auth.urls")),
     path('', include('urna.urls')),
 ]
