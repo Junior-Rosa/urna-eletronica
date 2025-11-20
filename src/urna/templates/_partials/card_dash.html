@@ -44,7 +44,7 @@
                 {% if eleicao.id in votacoes_usuario %}
                     <button class="btn btn-secondary mt-2" disabled>✅ Você já votou</button>
                 {% else %}
-                    <a href="{% url 'cargos' eleicao.pk %}
+                    <a href="{% url 'votar' eleicao.pk %}
                     " class="btn btn-primary mt-2">🗳️ Votar</a>
                 {% endif %}
             {% endif %}

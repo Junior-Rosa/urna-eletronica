@@ -1,6 +1,8 @@
+from django.contrib import messages
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..forms import VotoForm
@@ -52,11 +54,10 @@ class EleicaoRelatorioCSV(LoginRequiredMixin, View):
 
         return response
 
-class CargosView(LoginRequiredMixin, CreateView):
+class CargosView(LoginRequiredMixin, TemplateView):
     model = Voto
     template_name = 'cargos.html'
-    form_class = VotoForm
-    success_url = reverse_lazy('success-page')
+    success_url = reverse_lazy('index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,3 +68,27 @@ class CargosView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('index')
+
+class VotoCreateView(LoginRequiredMixin, CreateView):
+    model = Voto
+    form_class = VotoForm
+    template_name = 'votar.html'
+    success_url = reverse_lazy('index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        context['eleicao'] = Eleicao.objects.get(pk=pk)
+        context['cargos'] = Cargo.objects.filter(eleicao__pk=pk)
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Voto computado com sucesso!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Erro ao computar voto.")
+        import traceback
+        traceback.print_exc()
+        print(form.errors.as_data())
+        return super().form_invalid(form)

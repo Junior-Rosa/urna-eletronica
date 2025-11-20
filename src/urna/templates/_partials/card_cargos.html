@@ -16,7 +16,7 @@
             </div>
         {% endfor %}
     {% elif eleicao.status == 'EM_ANDAMENTO' %}
-        <form action="{% url 'cargos' eleicao.pk %}" method="POST">
+        <form action="{% url 'votar' eleicao.pk %}" method="POST">
             {% csrf_token %}
             <div class="row g-4">
                 {% for cargo in cargos %}
