@@ -27,5 +27,8 @@ class Voto(models.Model):
         
         if self.candidato is None:
             self.tipo_voto = 'NULO'
+
+        if self.candidato and self.candidato.nome.upper() == 'BRANCO':
+            self.tipo_voto = 'BRANCO'
         
         super().save(*args, **kwargs)
