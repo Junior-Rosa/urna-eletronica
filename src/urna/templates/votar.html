@@ -1,11 +1,99 @@
 {% extends '_partials/base.html' %}
-{% load static%}
+{% load static %}
 {% block title %} - Voto{% endblock %}
-{% block extra_head%}
+{% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
-{% endblock %}{% block content %}
+{% endblock %}
+
+{% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4 mt-4  text-center">🗳️ Confirme o voto</h2>
-        {% include '_partials/card_cargos.html' with cargos=cargos eleicao=eleicao %}
+    {% if voting_complete %}
+        <div class="alert alert-success text-center" role="alert">
+            <h2>✅ Votação Concluída!</h2>
+            <p>Você votou em todos os cargos da eleição <strong>{{ eleicao.nome }}</strong>.</p>
+            <a href="{% url 'index' %}" class="btn btn-primary mt-3">Voltar para Início</a>
+        </div>
+    {% else %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0 text-center">🗳️ Votação: {{ eleicao.nome }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h4 class="text-center">Cargo: <strong>{{ cargo.nome }}</strong></h4>
+                    <p class="text-center text-muted">
+                        Progresso: {{ request.session.cargos_votados|default:0 }} de {{ total_cargos }} cargo(s) votado(s)
+                    </p>
+                </div>
+
+                <form method="POST" action="{% url 'votar' eleicao.pk %}">
+                    {% csrf_token %}
+
+                    {# Hidden fields for the form #}
+                    <input type="hidden" name="eleicao" value="{{ eleicao.pk }}">
+                    <input type="hidden" name="cargo" value="{{ cargo.pk }}">
+                    <input type="hidden" name="eleitor" value="{{ request.user.eleitor.pk }}">
+
+                    <div class="mb-4">
+                        <h5 class="mb-3">Selecione um candidato:</h5>
+
+                        {% if cargo.candidatos.all %}
+                            {% for candidato in cargo.candidatos.all %}
+                                <div class="form-check mb-2 p-3 border rounded {% if forloop.counter0|divisibleby:2 %}bg-light{% endif %}">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="candidato"
+                                           id="candidato_{{ candidato.pk }}"
+                                           value="{{ candidato.pk }}"
+                                           required>
+                                    <label class="form-check-label w-100" for="candidato_{{ candidato.pk }}">
+                                        <strong>{{ candidato.numero }}</strong> - {{ candidato.eleitor.user.get_full_name|default:candidato.eleitor.user.username }}
+                                        {% if candidato.partido %}
+                                            <span class="badge bg-secondary">{{ candidato.partido }}</span>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                            {% endfor %}
+
+                            {# Option for blank/null vote #}
+                            <div class="form-check mb-2 p-3 border rounded">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="candidato"
+                                       id="candidato_nulo"
+                                       value=""
+                                       required>
+                                <label class="form-check-label w-100" for="candidato_nulo">
+                                    <strong>VOTO NULO</strong> - Não votar em nenhum candidato
+                                </label>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                Não há candidatos cadastrados para este cargo.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Erro ao processar o voto:</strong>
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if request.session.cargos_votados|default:0|add:1 >= total_cargos %}
+                                Finalizar Votação
+                            {% else %}
+                                Confirmar e Próximo Cargo
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

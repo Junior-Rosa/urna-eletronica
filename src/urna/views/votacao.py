@@ -75,16 +75,90 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
     template_name = 'votar.html'
     success_url = reverse_lazy('index')
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        if self.request.session.get('eleicao_atual') != self.kwargs['pk'] or self.request.session.get('eleicao_atual') is None:
+            self.request.session['eleicao_atual'] = self.kwargs['pk']
+            self.request.session['cargos_votados'] = 0
+            self.request.session['votos_pendentes'] = []
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context['eleicao'] = Eleicao.objects.get(pk=pk)
-        context['cargos'] = Cargo.objects.filter(eleicao__pk=pk)
+        cargos = Cargo.objects.filter(eleicao__pk=pk).order_by('id')
+        count_cargos = cargos.count()
+
+        cargos_votados = self.request.session.get('cargos_votados', 0)
+
+        if cargos_votados >= count_cargos:
+            context['cargo'] = None
+            context['voting_complete'] = True
+        else:
+            context['cargo'] = cargos[cargos_votados]
+            context['voting_complete'] = False
+
+        context['total_cargos'] = count_cargos
+
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, "Voto computado com sucesso!")
-        return super().form_valid(form)
+        voto_data = {
+            'eleitor_id': form.cleaned_data['eleitor'].id,
+            'cargo_id': form.cleaned_data['cargo'].id,
+            'candidato_id': form.cleaned_data['candidato'].id if form.cleaned_data['candidato'] else None,
+            'eleicao_id': form.cleaned_data['eleicao'].id,
+        }
+
+        # Add vote to pending votes in session
+        votos_pendentes = self.request.session.get('votos_pendentes', [])
+        votos_pendentes.append(voto_data)
+        self.request.session['votos_pendentes'] = votos_pendentes
+
+        # Increment voted positions counter
+        self.request.session['cargos_votados'] += 1
+
+        # Get total number of positions
+        pk = self.kwargs['pk']
+        cargos = Cargo.objects.filter(eleicao__pk=pk)
+        total_cargos = cargos.count()
+
+        # Check if all positions have been voted on
+        if self.request.session['cargos_votados'] >= total_cargos:
+            # Save all votes to database
+            self._save_all_votes()
+            messages.success(self.request, "Todos os votos foram computados com sucesso!")
+            # Clear session data
+            self.request.session['votos_pendentes'] = []
+            self.request.session['cargos_votados'] = 0
+            return self.redirect_to_success()
+        else:
+            messages.success(self.request, "Voto registrado! Prossiga para o próximo cargo.")
+            # Redirect back to the same view to vote for next position
+            return self.redirect_to_next_vote()
+
+    def _save_all_votes(self):
+        """Save all pending votes from session to database."""
+        votos_pendentes = self.request.session.get('votos_pendentes', [])
+
+        for voto_data in votos_pendentes:
+            Voto.objects.create(
+                eleitor_id=voto_data['eleitor_id'],
+                cargo_id=voto_data['cargo_id'],
+                candidato_id=voto_data['candidato_id'],
+                eleicao_id=voto_data['eleicao_id'],
+            )
+
+    def redirect_to_next_vote(self):
+        """Redirect to the same voting view for the next position."""
+        from django.http import HttpResponseRedirect
+        pk = self.kwargs['pk']
+        return HttpResponseRedirect(reverse('votar', kwargs={'pk': pk}))
+
+    def redirect_to_success(self):
+        """Redirect to success URL after all votes are saved."""
+        from django.http import HttpResponseRedirect
+        return HttpResponseRedirect(reverse('index'))
 
     def form_invalid(self, form):
         messages.error(self.request, "Erro ao computar voto.")
