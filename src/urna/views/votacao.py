@@ -110,20 +110,16 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
             'eleicao_id': form.cleaned_data['eleicao'].id,
         }
 
-        # Add vote to pending votes in session
         votos_pendentes = self.request.session.get('votos_pendentes', [])
         votos_pendentes.append(voto_data)
         self.request.session['votos_pendentes'] = votos_pendentes
 
-        # Increment voted positions counter
         self.request.session['cargos_votados'] += 1
 
-        # Get total number of positions
         pk = self.kwargs['pk']
         cargos = Cargo.objects.filter(eleicao__pk=pk)
         total_cargos = cargos.count()
 
-        # Check if all positions have been voted on
         if self.request.session['cargos_votados'] >= total_cargos:
             # Save all votes to database
             self._save_all_votes()
