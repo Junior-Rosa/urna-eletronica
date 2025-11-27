@@ -35,10 +35,10 @@
                     <input type="hidden" name="eleitor" value="{{ request.user.eleitor.pk }}">
 
                     <div class="mb-4">
-                        <h5 class="mb-3">Selecione um candidato:</h5>
+                        <h5 class="mb-3">Digite o número do candidato:</h5>
 
                         {% if cargo.candidatos.all %}
-                            {% for candidato in cargo.candidatos.all %}
+                            {% comment %}{% for candidato in cargo.candidatos.all %}
                                 <div class="form-check mb-2 p-3 border rounded {% if forloop.counter0|divisibleby:2 %}bg-light{% endif %}">
                                     <input class="form-check-input"
                                            type="radio"
@@ -53,10 +53,10 @@
                                         {% endif %}
                                     </label>
                                 </div>
-                            {% endfor %}
+                            {% endfor %}{% endcomment %}
 
                             {# Option for blank/null vote #}
-                            <div class="form-check mb-2 p-3 border rounded">
+                            {% comment %}<div class="form-check mb-2 p-3 border rounded">
                                 <input class="form-check-input"
                                        type="radio"
                                        name="candidato"
@@ -66,7 +66,21 @@
                                 <label class="form-check-label w-100" for="candidato_nulo">
                                     <strong>VOTO NULO</strong> - Não votar em nenhum candidato
                                 </label>
+                            </div>{% endcomment %}
+                            <div class="mb-3">
+                            <label for="numero_candidato" class="form-label">Número do Candidato</label>
+                            <input type="text"
+                                   class="form-control form-control-lg text-center"
+                                   id="numero_candidato"
+                                   name="numero_candidato"
+                                   placeholder="Digite o número"
+                                   maxlength="10"
+                                   style="font-size: 2rem; letter-spacing: 0.5rem;">
+                            <div class="form-text text-center mt-2">
+                                Digite o número do candidato ou clique em "Voto em Branco"
                             </div>
+                        </div>
+
                         {% else %}
                             <div class="alert alert-warning">
                                 Não há candidatos cadastrados para este cargo.
@@ -82,12 +96,15 @@
                     {% endif %}
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-success btn-lg" name="action" value="votar">
                             {% if request.session.cargos_votados|default:0|add:1 >= total_cargos %}
-                                Finalizar Votação
+                                Confirmar Voto e Finalizar
                             {% else %}
-                                Confirmar e Próximo Cargo
+                                Confirmar Voto
                             {% endif %}
+                        </button>
+                        <button type="submit" class="btn btn-warning btn-lg" name="action" value="branco">
+                            Voto em Branco
                         </button>
                         <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
                     </div>

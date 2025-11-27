@@ -6,7 +6,7 @@ from django.views.generic import ListView, CreateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..forms import VotoForm
-from ..models import Eleicao, Voto, Cargo
+from ..models import Eleicao, Voto, Cargo, Candidato
 import csv
 from django.http import HttpResponse
 
@@ -103,10 +103,36 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        action = self.request.POST.get('action', 'votar')
+
+        if action == 'branco':
+            # Blank vote - candidato is None
+            candidato_id = None
+            messages.info(self.request, "Voto em branco registrado!")
+        else:
+            # Regular vote - process the candidate number
+            numero_candidato = self.request.POST.get('numero_candidato', '').strip()
+            cargo = form.cleaned_data['cargo']
+
+            if numero_candidato:
+                # Try to find the candidate by number
+                try:
+                    candidato = Candidato.objects.get(cargo=cargo, numero=numero_candidato)
+                    candidato_id = candidato.id
+                    messages.success(self.request, f"Voto registrado para o candidato {numero_candidato}!")
+                except Candidato.DoesNotExist:
+                    # Invalid number - null vote
+                    candidato_id = None
+                    messages.warning(self.request, f"Número {numero_candidato} inválido. Voto nulo registrado!")
+            else:
+                # No number entered - null vote
+                candidato_id = None
+                messages.warning(self.request, "Nenhum número digitado. Voto nulo registrado!")
+
         voto_data = {
             'eleitor_id': form.cleaned_data['eleitor'].id,
             'cargo_id': form.cleaned_data['cargo'].id,
-            'candidato_id': form.cleaned_data['candidato'].id if form.cleaned_data['candidato'] else None,
+            'candidato_id': candidato_id,
             'eleicao_id': form.cleaned_data['eleicao'].id,
         }
 
@@ -129,7 +155,6 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
             self.request.session['cargos_votados'] = 0
             return self.redirect_to_success()
         else:
-            messages.success(self.request, "Voto registrado! Prossiga para o próximo cargo.")
             # Redirect back to the same view to vote for next position
             return self.redirect_to_next_vote()
 
