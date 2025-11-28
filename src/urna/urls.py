@@ -17,6 +17,7 @@ urlpatterns = [
     path('candidatar/<int:pk>', views.CandidatarCreateView.as_view(), name='candidatar'),
     path('candidatos/<int:pk>', views.CandidatosListView.as_view(), name='candidatos'),
     path('relatorio/<int:pk>/', views.EleicaoRelatorioCSV.as_view(), name='relatorio-csv'),
+    path('buscar_candidato/<int:eleicao_id>/<int:cargo_id>/<int:numero>', views.BuscarCandidatoView.as_view(), name='buscar_candidato'),
 
     path('votar/<int:pk>/', views.VotoCreateView.as_view(), name='votar'),
     path('cargos/<int:pk>/', views.CargosView.as_view(), name='cargos'),

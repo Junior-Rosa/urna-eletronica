@@ -13,7 +13,7 @@ class Voto(models.Model):
     eleicao = models.ForeignKey(Eleicao, on_delete=models.CASCADE, related_name='votos')
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='votos')
     candidato = models.ForeignKey(Candidato, on_delete=models.SET_NULL, null=True, blank=True, related_name='votos')
-    tipo_voto = models.CharField(max_length=10, choices=TIPO_VOTO_CHOICES, editable=False)
+    tipo_voto = models.CharField(max_length=10, choices=TIPO_VOTO_CHOICES)
     eleitor = models.ForeignKey(Eleitor, on_delete=models.CASCADE)
     data_voto = models.DateTimeField(auto_now_add=True)
     
@@ -24,8 +24,7 @@ class Voto(models.Model):
         return f"Voto para {self.cargo.nome} em {self.eleicao.nome}"
 
     def save(self, *args, **kwargs):
-        
-        if self.candidato is None:
+        if self.candidato is None and self.tipo_voto != 'BRANCO':
             self.tipo_voto = 'NULO'
         
         super().save(*args, **kwargs)

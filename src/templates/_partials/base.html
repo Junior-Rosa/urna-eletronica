@@ -28,7 +28,7 @@
                     {% endif %}
                     
                     <li><a href="{% url 'area-candidato' %}">Area do Candidato</a></li>
-                    <li><a href="#about">Area do Eleitor</a></li>
+                    <li><a href="{% url 'index' %}">Area do Eleitor</a></li>
                     <li>
                         <form action="{% url 'logout' %}" method="post" style="display: inline;">
                             {% csrf_token %}

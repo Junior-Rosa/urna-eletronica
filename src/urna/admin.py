@@ -38,7 +38,7 @@ class VotoAdmin(admin.ModelAdmin):
     list_display = ('eleitor', 'candidato', 'data_voto')
     list_filter = ('candidato__cargo__eleicao', 'candidato__cargo')
     search_fields = ('eleitor__user', 'candidato__user')
-    readonly_fields = ('data_voto',)
+    readonly_fields = ('data_voto', 'tipo_voto')
     ordering = ('-data_voto',)
 
     

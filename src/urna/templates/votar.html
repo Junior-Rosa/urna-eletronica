@@ -35,10 +35,10 @@
                     <input type="hidden" name="eleitor" value="{{ request.user.eleitor.pk }}">
 
                     <div class="mb-4">
-                        <h5 class="mb-3">Selecione um candidato:</h5>
+                        <h5 class="mb-3">Digite o número do candidato:</h5>
 
                         {% if cargo.candidatos.all %}
-                            {% for candidato in cargo.candidatos.all %}
+                            {% comment %}{% for candidato in cargo.candidatos.all %}
                                 <div class="form-check mb-2 p-3 border rounded {% if forloop.counter0|divisibleby:2 %}bg-light{% endif %}">
                                     <input class="form-check-input"
                                            type="radio"
@@ -53,10 +53,10 @@
                                         {% endif %}
                                     </label>
                                 </div>
-                            {% endfor %}
+                            {% endfor %}{% endcomment %}
 
                             {# Option for blank/null vote #}
-                            <div class="form-check mb-2 p-3 border rounded">
+                            {% comment %}<div class="form-check mb-2 p-3 border rounded">
                                 <input class="form-check-input"
                                        type="radio"
                                        name="candidato"
@@ -66,7 +66,47 @@
                                 <label class="form-check-label w-100" for="candidato_nulo">
                                     <strong>VOTO NULO</strong> - Não votar em nenhum candidato
                                 </label>
+                            </div>{% endcomment %}
+                            <div class="mb-3">
+                            <label for="numero_candidato" class="form-label">Número do Candidato</label>
+                            <input type="text"
+                                   class="form-control form-control-lg text-center"
+                                   id="numero_candidato"
+                                   name="numero_candidato"
+                                   placeholder="Número do Candidato com {{ cargo.digitos }} dígitos"
+                                   maxlength="{{ cargo.digitos }}"
+                                   style="font-size: 2rem; letter-spacing: 0.5rem;">
+                            <div class="form-text text-center mt-2">
+                                Digite o número do candidato ou clique em "Voto em Branco"
                             </div>
+
+                            <!-- Candidate Preview Area -->
+                            <div id="candidato-preview" class="mt-4 p-3 border rounded text-center" style="display: none;">
+                                <div id="preview-loading" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                </div>
+                                <div id="preview-content" style="display: none;">
+                                    <img id="preview-foto" 
+                                        src="" 
+                                        alt="Foto do candidato" 
+                                        class="mb-3 mx-auto" 
+                                        style="max-width: 300px; max-height: 200px;">
+                                    <h5 id="preview-nome"></h5>
+                                    <p class="text-muted mb-1">
+                                        <strong>Número:</strong> <span id="preview-numero"></span>
+                                    </p>
+                                    <p class="text-muted" id="preview-partido-container" style="display: none;">
+                                        <strong>Partido:</strong> <span id="preview-partido"></span>
+                                    </p>
+                                </div>
+                                <div id="preview-not-found" style="display: none;">
+                                    <p class="text-danger">❌ Candidato não encontrado</p>
+                                </div>
+                            </div>
+                        </div>
+
                         {% else %}
                             <div class="alert alert-warning">
                                 Não há candidatos cadastrados para este cargo.
@@ -82,18 +122,91 @@
                     {% endif %}
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-success btn-lg" name="action" value="votar">
                             {% if request.session.cargos_votados|default:0|add:1 >= total_cargos %}
-                                Finalizar Votação
+                                Confirmar Voto e Finalizar
                             {% else %}
-                                Confirmar e Próximo Cargo
+                                Confirmar Voto
                             {% endif %}
                         </button>
+                        <button type="submit" class="btn btn-warning btn-lg" name="action" value="branco">
+                            Voto em Branco
+                        </button>
                         <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        <a href="{% url 'candidatos' eleicao.pk %}" class="btn btn-outline-secondary">Ver Candidatos</a>
                     </div>
                 </form>
             </div>
         </div>
     {% endif %}
 </div>
+// Preview do candidato sendo digitado no momento
+<script>
+    let searchTimeout;
+    const numeroInput = document.getElementById('numero_candidato');
+    const previewContainer = document.getElementById('candidato-preview');
+    const previewLoading = document.getElementById('preview-loading');
+    const previewContent = document.getElementById('preview-content');
+    const previewNotFound = document.getElementById('preview-not-found');
+
+    numeroInput.addEventListener('input', function(e) {
+        const numero = e.target.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        previewContainer.style.display = 'none';
+        previewLoading.style.display = 'none';
+        previewContent.style.display = 'none';
+        previewNotFound.style.display = 'none';
+
+        if (numero.length === {{ cargo.digitos }}) {
+            previewContainer.style.display = 'block';
+            previewLoading.style.display = 'block';
+
+            searchTimeout = setTimeout(() => {
+                buscarCandidato(numero);
+            }, 300);
+        }
+    });
+
+    async function buscarCandidato(numero) {
+        try {
+            const buscarCandidatoBaseUrl = "{% url 'buscar_candidato' eleicao.pk cargo.pk 0 %}".replace('/0', '');
+            const response = await fetch(
+                `${buscarCandidatoBaseUrl}/${numero}`
+            );
+            const data = await response.json();
+
+            previewLoading.style.display = 'none';
+
+            if (data.candidato) {
+                // Update preview with candidate data
+                document.getElementById('preview-nome').textContent = data.nome;
+                document.getElementById('preview-numero').textContent = data.numero;
+
+                if (data.foto_url) {
+                    document.getElementById('preview-foto').src = data.foto_url;
+                    document.getElementById('preview-foto').style.display = 'block';
+                } else {
+                    document.getElementById('preview-foto').style.display = 'none';
+                }
+
+                if (data.partido) {
+                    document.getElementById('preview-partido').textContent = data.partido;
+                    document.getElementById('preview-partido-container').style.display = 'block';
+                } else {
+                    document.getElementById('preview-partido-container').style.display = 'none';
+                }
+
+                previewContent.style.display = 'block';
+            } else {
+                previewNotFound.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Erro ao buscar candidato:', error);
+            previewLoading.style.display = 'none';
+            previewNotFound.style.display = 'block';
+        }
+    }
+</script>
 {% endblock %}
