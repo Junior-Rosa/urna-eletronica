@@ -35,7 +35,7 @@ class EleitorAdmin(admin.ModelAdmin):
 @admin.register(Voto)
 class VotoAdmin(admin.ModelAdmin):
     form = VotoForm
-    list_display = ('eleitor', 'candidato', 'data_voto')
+    list_display = ('eleitor', 'candidato', 'data_voto', 'tipo_voto')
     list_filter = ('candidato__cargo__eleicao', 'candidato__cargo')
     search_fields = ('eleitor__user', 'candidato__user')
     readonly_fields = ('data_voto', 'tipo_voto')
