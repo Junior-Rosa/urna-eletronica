@@ -8,7 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from ..forms import VotoForm
 from ..models import Eleicao, Voto, Cargo, Candidato
 import csv
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
 
 class IndexView(LoginRequiredMixin, ListView):
     
@@ -198,3 +199,19 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
         traceback.print_exc()
         print(form.errors.as_data())
         return super().form_invalid(form)
+
+# Class for JavaScript to retrieve a candidate
+class BuscarCandidatoView(LoginRequiredMixin, View):
+    def get(self, request, eleicao_id, cargo_id):
+        numero = request.GET.get('numero')
+        candidato = Candidato.objects.filter(cargo__eleicao__pk=eleicao_id, cargo__pk=cargo_id, numero=numero).first()
+        if candidato:
+            return JsonResponse({
+                'candidato': candidato.id,
+                'nome': candidato.eleitor.user.get_full_name() or candidato.eleitor.user.username,
+                'numero': candidato.numero,
+                'foto_url': candidato.foto.url if candidato.foto else None,
+                'partido': candidato.partido,
+            })
+        else:
+            return JsonResponse({'candidato': None})

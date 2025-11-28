@@ -79,6 +79,28 @@
                             <div class="form-text text-center mt-2">
                                 Digite o número do candidato ou clique em "Voto em Branco"
                             </div>
+
+                            <!-- Candidate Preview Area -->
+                            <div id="candidato-preview" class="mt-4 p-3 border rounded text-center" style="display: none;">
+                                <div id="preview-loading" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                </div>
+                                <div id="preview-content" style="display: none;">
+                                    <img id="preview-foto" src="" alt="Foto do candidato" class="mb-3">
+                                    <h5 id="preview-nome"></h5>
+                                    <p class="text-muted mb-1">
+                                        <strong>Número:</strong> <span id="preview-numero"></span>
+                                    </p>
+                                    <p class="text-muted" id="preview-partido-container" style="display: none;">
+                                        <strong>Partido:</strong> <span id="preview-partido"></span>
+                                    </p>
+                                </div>
+                                <div id="preview-not-found" style="display: none;">
+                                    <p class="text-danger">❌ Candidato não encontrado</p>
+                                </div>
+                            </div>
                         </div>
 
                         {% else %}
@@ -114,4 +136,76 @@
         </div>
     {% endif %}
 </div>
+// Preview do candidato sendo digitado no momento
+<script>
+    let searchTimeout;
+    const numeroInput = document.getElementById('numero_candidato');
+    const previewContainer = document.getElementById('candidato-preview');
+    const previewLoading = document.getElementById('preview-loading');
+    const previewContent = document.getElementById('preview-content');
+    const previewNotFound = document.getElementById('preview-not-found');
+
+    numeroInput.addEventListener('input', function(e) {
+        const numero = e.target.value.trim();
+
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+
+        // Hide all preview states
+        previewContainer.style.display = 'none';
+        previewLoading.style.display = 'none';
+        previewContent.style.display = 'none';
+        previewNotFound.style.display = 'none';
+
+        // Only search when we have the correct number of digits
+        if (numero.length === {{ cargo.digitos }}) {
+            previewContainer.style.display = 'block';
+            previewLoading.style.display = 'block';
+
+            // Debounce the search by 300ms
+            searchTimeout = setTimeout(() => {
+                buscarCandidato(numero);
+            }, 300);
+        }
+    });
+
+    async function buscarCandidato(numero) {
+        try {
+            const response = await fetch(
+                `{% url 'buscar_candidato' eleicao.pk cargo.pk %}/${numero}`
+            );
+            const data = await response.json();
+
+            previewLoading.style.display = 'none';
+
+            if (data.candidato) {
+                // Update preview with candidate data
+                document.getElementById('preview-nome').textContent = data.nome;
+                document.getElementById('preview-numero').textContent = data.numero;
+
+                if (data.foto_url) {
+                    document.getElementById('preview-foto').src = data.foto_url;
+                    document.getElementById('preview-foto').style.display = 'block';
+                } else {
+                    document.getElementById('preview-foto').style.display = 'none';
+                }
+
+                if (data.partido) {
+                    document.getElementById('preview-partido').textContent = data.partido;
+                    document.getElementById('preview-partido-container').style.display = 'block';
+                } else {
+                    document.getElementById('preview-partido-container').style.display = 'none';
+                }
+
+                previewContent.style.display = 'block';
+            } else {
+                previewNotFound.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Erro ao buscar candidato:', error);
+            previewLoading.style.display = 'none';
+            previewNotFound.style.display = 'block';
+        }
+    }
+</script>
 {% endblock %}
