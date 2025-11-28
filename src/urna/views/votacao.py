@@ -58,7 +58,6 @@ class EleicaoRelatorioCSV(LoginRequiredMixin, View):
         return response
 
 class CargosView(LoginRequiredMixin, TemplateView):
-class CargosView(LoginRequiredMixin, TemplateView):
     model = Voto
     template_name = 'cargos.html'
     success_url = reverse_lazy('index')
