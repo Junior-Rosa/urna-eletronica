@@ -108,6 +108,8 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
         if action == 'branco':
             # Blank vote - candidato is None
             candidato_id = None
+            tipo_voto = 'BRANCO'
+
             messages.info(self.request, "Voto em branco registrado!")
         else:
             # Regular vote - process the candidate number
@@ -119,14 +121,17 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
                 try:
                     candidato = Candidato.objects.get(cargo=cargo, numero=numero_candidato)
                     candidato_id = candidato.id
+                    tipo_voto = 'VALIDO'
                     messages.success(self.request, f"Voto registrado para o candidato {numero_candidato}!")
                 except Candidato.DoesNotExist:
                     # Invalid number - null vote
                     candidato_id = None
+                    tipo_voto = 'NULO'
                     messages.warning(self.request, f"Número {numero_candidato} inválido. Voto nulo registrado!")
             else:
                 # No number entered - null vote
                 candidato_id = None
+                tipo_voto = 'NULO'
                 messages.warning(self.request, "Nenhum número digitado. Voto nulo registrado!")
 
         voto_data = {
@@ -134,6 +139,7 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
             'cargo_id': form.cleaned_data['cargo'].id,
             'candidato_id': candidato_id,
             'eleicao_id': form.cleaned_data['eleicao'].id,
+            'tipo_voto': tipo_voto,
         }
 
         votos_pendentes = self.request.session.get('votos_pendentes', [])
@@ -160,15 +166,20 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
 
     def _save_all_votes(self):
         """Save all pending votes from session to database."""
-        votos_pendentes = self.request.session.get('votos_pendentes', [])
+        try:
+            votos_pendentes = self.request.session.get('votos_pendentes', [])
 
-        for voto_data in votos_pendentes:
-            Voto.objects.create(
-                eleitor_id=voto_data['eleitor_id'],
-                cargo_id=voto_data['cargo_id'],
-                candidato_id=voto_data['candidato_id'],
-                eleicao_id=voto_data['eleicao_id'],
-            )
+            for voto_data in votos_pendentes:
+                Voto.objects.create(
+                    eleitor_id=voto_data['eleitor_id'],
+                    cargo_id=voto_data['cargo_id'],
+                    candidato_id=voto_data['candidato_id'],
+                    eleicao_id=voto_data['eleicao_id'],
+                    tipo_voto=voto_data['tipo_voto'],
+                )
+        except Exception as e:
+            print(e)
+            print(votos_pendentes if votos_pendentes else "Nenhum voto pendente")
 
     def redirect_to_next_vote(self):
         """Redirect to the same voting view for the next position."""
