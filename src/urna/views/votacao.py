@@ -202,13 +202,13 @@ class VotoCreateView(LoginRequiredMixin, CreateView):
 
 # Class for JavaScript to retrieve a candidate
 class BuscarCandidatoView(LoginRequiredMixin, View):
-    def get(self, request, eleicao_id, cargo_id):
-        numero = request.GET.get('numero')
+    def get(self, request, eleicao_id, cargo_id, numero):
         candidato = Candidato.objects.filter(cargo__eleicao__pk=eleicao_id, cargo__pk=cargo_id, numero=numero).first()
+        print(candidato)
         if candidato:
             return JsonResponse({
                 'candidato': candidato.id,
-                'nome': candidato.eleitor.user.get_full_name() or candidato.eleitor.user.username,
+                'nome': candidato.eleitor.user.username,
                 'numero': candidato.numero,
                 'foto_url': candidato.foto.url if candidato.foto else None,
                 'partido': candidato.partido,
