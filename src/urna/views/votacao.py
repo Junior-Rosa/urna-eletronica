@@ -44,16 +44,16 @@ class EleicaoRelatorioCSV(LoginRequiredMixin, View):
     """Gera um relatório CSV com os votos de uma eleição."""
     def get(self, request, pk):
         eleicao = Eleicao.objects.get(pk=pk)
-        votos = eleicao.votos.all()
+        votos = eleicao.votos.all() 
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="relatorio_{eleicao.nome}.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Eleitor', 'Candidato', 'Data do Voto'])
+        writer.writerow(['Eleitor', 'Candidato','Tipo Voto','Data do Voto'])
 
         for voto in votos:
-            writer.writerow([voto.eleitor, voto.candidato, voto.data_voto.strftime('%d/%m/%Y %H:%M')])
+            writer.writerow([voto.eleitor, voto.candidato, voto.tipo_voto, voto.data_voto.strftime('%d/%m/%Y %H:%M')])
 
         return response
 
