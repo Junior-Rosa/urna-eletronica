@@ -77,7 +77,14 @@ class Cargo(models.Model):
 
     def __str__(self):
         return f"{self.nome} ({self.eleicao.nome})"
-    
+
+    def get_candidato_vencedor(self):
+        candidato = self.candidatos.annotate(
+            total_votos = models.Count('votos')
+        ).order_by('-total_votos').first()
+        print(candidato)
+        return candidato
+
     def get_total_candidatos(self):
         """Retorna os candidatos concorrendo a este cargo."""
         return self.candidatos.count()
@@ -99,6 +106,13 @@ class Candidato(models.Model):
     def get_votos(self):
         """Retorna o número de votos recebidos pelo candidato."""
         return self.votos.count()
+
+    def is_winner(self) -> bool:
+        if self.cargo.eleicao.status != 'FINALIZADA':
+            print(self.cargo.eleicao.status)
+            print("Caiu aqui")
+            return False
+        return self.cargo.get_candidato_vencedor() == self
     
     
     get_votos.short_description = "Total de Votos"
